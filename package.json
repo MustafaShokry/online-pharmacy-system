@@ -1,0 +1,28 @@
+{
+  "name": "online-pharmacy-system",
+  "version": "1.0.0",
+  "description": "online-pharmacy-system",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MustafaShokry/online-pharmacy-system.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MustafaShokry/online-pharmacy-system/issues"
+  },
+  "homepage": "https://github.com/MustafaShokry/online-pharmacy-system#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
