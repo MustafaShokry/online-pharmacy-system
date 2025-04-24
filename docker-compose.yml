@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  backend:
+    build: .
+    container_name: pharmacy-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    container_name: pharmacy-mongo
+    command: mongod --logpath /var/log/mongodb/mongo.log --logappend
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/db:/data/db
+      - ./logs/mongo:/var/log/mongodb
