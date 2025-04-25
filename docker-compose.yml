@@ -1,27 +1,68 @@
-version: "3.8"
+  services:
+    frontend:
+      build:
+        context: frontend
+        target: development
+      ports:
+        - 3020:3000 
+      stdin_open: true
+      volumes:
+        - ./frontend:/usr/src/app
+        - /usr/src/app/node_modules
+      restart: always
+      environment:
+        - BACKEND_URI=http://backend:3000
+      networks:
+        - pharmacy-front-network
+      depends_on:
+        - backend
 
-services:
-  backend:
-    build: .
-    container_name: pharmacy-backend
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    env_file:
-      - .env
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    depends_on:
-      - mongo
+    backend:
+      build:
+        context: backend
+        target: development
+      volumes:
+        - ./backend:/usr/src/app
+        - /usr/src/app/node_modules
+      restart: always
+      environment:
+        - MONGODB_URI=mongodb://database:27017/pharmacy?directConnection=true
+      networks:
+        - pharmacy-front-network
+        - pharmacy-back-network
+      depends_on:
+        database:
+          condition: service_healthy
+      expose: 
+        - 3000
+      ports:
+        - 3021:3000   # for test
 
-  mongo:
-    image: mongo
-    container_name: pharmacy-mongo
-    command: mongod --logpath /var/log/mongodb/mongo.log --logappend
-    ports:
-      - "27017:27017"
-    volumes:
-      - ./data/db:/data/db
-      - ./logs/mongo:/var/log/mongodb
+    database:
+
+      image: mongo:4.2.0
+      healthcheck:
+        test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+        interval: 3s
+        retries: 5
+        start_period: 30s
+      volumes:
+        - db_volume:/data/db
+      restart: always
+      environment:
+        ALLOW_EMPTY_PASSWORD: 'yes'
+      networks:
+        - pharmacy-back-network
+      expose:
+        - 27017
+      ports:
+        - 3022:27017    # for test
+        
+
+
+  networks:
+    pharmacy-front-network:
+    pharmacy-back-network:
+
+  volumes:
+    db_volume:
