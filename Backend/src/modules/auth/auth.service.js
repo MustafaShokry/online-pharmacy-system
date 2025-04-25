@@ -43,7 +43,7 @@ const login = async ({ email, password }) => {
     });
 
 
-    return { token };
+    return token;
 };
 
 module.exports = {
