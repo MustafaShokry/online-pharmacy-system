@@ -27,6 +27,7 @@
       restart: always
       environment:
         - MONGODB_URI=mongodb://database:27017/pharmacy?directConnection=true
+        - CHOKIDAR_USEPolling=true
       networks:
         - pharmacy-front-network
         - pharmacy-back-network
@@ -51,6 +52,7 @@
       restart: always
       environment:
         ALLOW_EMPTY_PASSWORD: 'yes'
+      command : mongod --logpath /var/log/mongodb/mongod.log --logappend
       networks:
         - pharmacy-back-network
       expose:
