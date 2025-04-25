@@ -39,14 +39,14 @@ exports.addProduct = async (req, res) => {
 // Update a product
 exports.updateProduct = async (req, res) => {
     try {
-        const { id } = req.body;
+        const { _id } = req.body;
         const updates = req.body;
 
         if (req.file) {
             updates.image = req.file.path; // Update image if a new one is uploaded
         }
 
-        const updatedProduct = await Product.findByIdAndUpdate(id, updates, { new: true });
+        const updatedProduct = await Product.findByIdAndUpdate(_id, updates, { new: true });
 
         if (!updatedProduct) {
             return res.status(404).json({ message: 'Product not found' });
@@ -61,8 +61,8 @@ exports.updateProduct = async (req, res) => {
 // Delete a product
 exports.deleteProduct = async (req, res) => {
     try {
-        const { id } = req.body;        
-        const product = await Product.findByIdAndDelete(id);
+        const { _id } = req.body;        
+        const product = await Product.findByIdAndDelete(_id);
 
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });

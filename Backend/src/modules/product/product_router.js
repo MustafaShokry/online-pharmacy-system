@@ -20,6 +20,6 @@ router.get('/getAllProducts', productController.getAllProducts);
 router.post('/addProduct', upload.single('image'), productController.addProduct); // Handle image upload
 router.put('/updateProduct', upload.single('image'), productController.updateProduct); // Handle image upload
 router.delete('/deleteProduct', productController.deleteProduct);
-router.get('/category', productController.getProductsByCategory);
+router.use('/category', productController.getProductsByCategory);
 
 module.exports = router;
