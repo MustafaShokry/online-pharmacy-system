@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const errorHandler = require('./middleware/error.middleware');
-const notFoundHandler = require('./middleware/notFound.middleware')
+const notFoundHandler = require('./middleware/notFound.middleware');
+const authRoutes = require('./modules/auth/auth.routes');
 
 
 function createApp() {
@@ -15,6 +16,9 @@ function createApp() {
     app.get('/', (req, res) => {
         res.send("Hello World!");
     })
+
+    // Mount routes
+    app.use('/api/auth', authRoutes);
 
     // 404 Not Found Handler
     app.use(notFoundHandler);
