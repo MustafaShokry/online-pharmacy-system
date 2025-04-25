@@ -1,13 +1,16 @@
-# Dockerfile
-FROM node:20
-
-WORKDIR /app
-
+FROM node:lts-alpine3.21 AS base
+WORKDIR /usr/src/app
 COPY package*.json ./
+
+FROM base AS development
+RUN npm install -g nodemon
 RUN npm install
-
 COPY . .
-
 EXPOSE 3000
+CMD ["nodemon", "index.js"]
 
-CMD ["npm", "run", "dev"]
+FROM base AS production
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["node", "index.js"]
