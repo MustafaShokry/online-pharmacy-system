@@ -8,6 +8,7 @@ const { loginUserDto } = require('./dto/login.dto');
 const { forgotPasswordDto } = require('./dto/forgotPassword.dto');
 const { resetPasswordDto } = require('./dto/resetPassword.dto');
 const { changePasswordDto } = require('./dto/changePassword.dto');
+const { updateUserDto } = require('./dto/updateUser.dto');
 
 
 router.post('/register', validate(createUserDto), authController.register);
@@ -24,6 +25,11 @@ router.post('/reset-password/:token', validate(resetPasswordDto), authController
 
 router.patch('/change-password', authenticate, validate(changePasswordDto), authController.changePassword);
 
+
+router.get('/me', authenticate, authController.getUserProfile);
+
+
+router.put('/me', authenticate, validate(updateUserDto), authController.updateUserProfile);
 
 
 module.exports = router;

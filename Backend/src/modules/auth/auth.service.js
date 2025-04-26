@@ -95,10 +95,32 @@ const changePassword = async (userId, { currentPassword, newPassword }) => {
     await user.save();
 };
 
+const getUserById = async (userId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new AppError('User not found', 404);
+
+    const userObj = user.toObject();
+    delete userObj.__v;
+
+    return userObj;
+};
+
+const updateUserById = async (userId, updateData) => {
+    const user = await User.findByIdAndUpdate(userId, updateData, {
+        new: true,
+        runValidators: true,
+    });
+    if (!user) throw new AppError('User not found', 404);
+    return user;
+};
+
+
 module.exports = {
     register,
     login,
     forgotPassword,
     resetPassword,
     changePassword,
+    getUserById,
+    updateUserById,
 };
