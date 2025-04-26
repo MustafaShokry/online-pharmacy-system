@@ -206,9 +206,9 @@ export const processCashPayment = async (req, res) => {
     }
 };
 
-const PAYMOB_API_KEY = 'ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2T1RrM05qZzJMQ0p1WVcxbElqb2lhVzVwZEdsaGJDSjkuWGJNSEktY05PV0x1YkZadnlLaGdQSGxFTTNVY0ZnY0p3aE9fUHFqU1VwRnlPVmVFMnhVTXQ3TGEycFpRenIyRG5TVU1HUTdUS2FFMmZ4YldYeTVRbFE=';
-const INTEGRATION_ID = 'your_integration_id_here';
-const IFRAME_ID = 'your_iframe_id_here';
+const PAYMOB_API_KEY = process.env.PAYMOB_API_KEY;
+const INTEGRATION_ID = process.env.PAYMOB_INTEGRATION_ID;
+const IFRAME_ID = process.env.PAYMOB_IFRAME_ID;
 
 export const processVisaPayment = async (req, res) => {
     const { amount, currency } = req.body;
