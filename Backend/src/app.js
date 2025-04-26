@@ -16,14 +16,16 @@ function createApp() {
         res.send("Hello World!");
     })
 
+    // Product Routes
+    app.use('/products',productRouter)
+
+
     // 404 Not Found Handler
     app.use(notFoundHandler);
 
     // Central Error Handler
     app.use(errorHandler);
     
-    // Product Routes
-    app.use('/products',productRouter)
 
     return app;
 }
