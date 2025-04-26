@@ -1,6 +1,6 @@
 import { cartModel } from "./cart.model.js";
 import { orderModel } from "../order/order.model.js";
-import { productModel } from "../product/product_model.js";
+import { product_model } from "../product/product_model.js";
 import { userModel } from '../auth/user.model.js';
 import jwt from 'jsonwebtoken';
 import axios from "axios";
@@ -29,7 +29,7 @@ export const addProductToCart = catchError(async (req, res) => {
         return res.status(400).json({ msg: "Product ID is required" });
     }
 
-    const product = await productModel.findById(productId);
+    const product = await product_model.findById(productId);
     if (!product) {
         return res.status(404).json({ msg: "Product not found" });
     }
@@ -116,7 +116,7 @@ export const getCartForUser = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req); 
     const cart = await cartModel.findOne({ userId: userId }).populate({
         path: 'items.productId',
-        model: productModel,
+        model: product_model,
     });
     if (!cart) {
         return res.status(404).json({ msg: "Cart not found" });
@@ -158,7 +158,7 @@ export const processCashPayment = async (req, res) => {
         const availableItems = [];
 
         for (const item of items) {
-            const product = await productModel.findById(item.productId);
+            const product = await product_model.findById(item.productId);
             if (!product) {
                 return res.status(404).json({ error: `Product ID "${item.productId}" not found.` });
             }
