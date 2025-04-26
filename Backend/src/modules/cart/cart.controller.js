@@ -1,9 +1,9 @@
-import { cartModel } from "./cart.model.js";
-import { orderModel } from "../order/order.model.js";
-import { product_model } from "../product/product_model.js";
-import { userModel } from '../auth/user.model.js';
-import jwt from 'jsonwebtoken';
-import axios from "axios";
+const cartModel = require('./cart.model');
+const orderModel = require('../order/order.model');
+const product_model = require('../product/product_model');
+const userModel = require('../auth/user.model');
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
 const extractUserIdFromToken = (req) => {
     const token = req.headers.token; 
