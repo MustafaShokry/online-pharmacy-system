@@ -41,15 +41,5 @@ const cartSchema = new mongoose.Schema(
     }
 );
 
-// Pre-save hook to calculate totalQuantity and totalPrice
-cartSchema.pre('save', function (next) {
-    try {
-        this.totalQuantity = this.items.reduce((sum, item) => sum + item.quantity, 0);
-        this.totalPrice = this.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
 
 module.exports = mongoose.model('Cart', cartSchema);
