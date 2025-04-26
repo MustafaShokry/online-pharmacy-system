@@ -142,7 +142,7 @@ export const clearCart = catchError(async (req, res) => {
     res.json({ msg: "Cart cleared successfully", cart });
 });
 
-export const processCashPayment = async (req, res) => {
+export const processCashPayment = catchError(async (req, res) => {
     const { userId, items } = req.body;
 
     if (!userId || !items) {
@@ -204,7 +204,7 @@ export const processCashPayment = async (req, res) => {
         console.error('Error in processing cash payment:', error);
         res.status(500).json({ error: 'Cash payment failed', details: error.message });
     }
-};
+});
 
 const PAYMOB_API_KEY = process.env.PAYMOB_API_KEY;
 const INTEGRATION_ID = process.env.PAYMOB_INTEGRATION_ID;
