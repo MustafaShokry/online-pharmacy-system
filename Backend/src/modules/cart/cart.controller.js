@@ -1,15 +1,16 @@
 const cartModel = require('./cart.model');
 const orderModel = require('../order/order.model');
 const Product = require('../product/product_model');
-const userModel = require('../auth/user.model');
+const User = require('../auth/user.model');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+const AppError = require('../../utils/AppError');
 
 const extractUserIdFromToken = (req) => {
-    const token = req.headers.token; 
+    const token = req.headers.token;
     if (!token) throw new AppError('Token missing', 401);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-    return decoded.userId; 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return decoded.userId;
 };
 
 const catchError = (fn) => (req, res, next) => {
@@ -19,11 +20,9 @@ const catchError = (fn) => (req, res, next) => {
     });
 };
 
-
-
 module.exports.addProductToCart = catchError(async (req, res) => {
-    const userId = extractUserIdFromToken(req); 
-    const { productId } = req.body; 
+    const userId = extractUserIdFromToken(req);
+    const { productId } = req.body;
 
     if (!productId) {
         return res.status(400).json({ msg: "Product ID is required" });
@@ -34,11 +33,11 @@ module.exports.addProductToCart = catchError(async (req, res) => {
         return res.status(404).json({ msg: "Product not found" });
     }
 
-    let cart = await cartModel.findOne({ userId: userId });
+    let cart = await cartModel.findOne({ userId });
 
     if (!cart) {
         cart = new cartModel({
-            userId: userId,
+            userId,
             items: [{ productId, quantity: 1, price: product.price }],
             totalQuantity: 1,
             totalPrice: product.price
@@ -64,13 +63,13 @@ module.exports.addProductToCart = catchError(async (req, res) => {
 });
 
 module.exports.updateProductQuantityInCart = catchError(async (req, res) => {
-    const userId = extractUserIdFromToken(req); 
-    const { productId, quantity } = req.body; 
+    const userId = extractUserIdFromToken(req);
+    const { productId, quantity } = req.body;
 
     if (!productId || !quantity || quantity < 1) {
         return res.status(400).json({ msg: "Product ID and valid quantity are required" });
     }
-    const cart = await cartModel.findOne({ userId: userId });
+    const cart = await cartModel.findOne({ userId });
     if (!cart) {
         return res.status(404).json({ msg: "Cart not found" });
     }
@@ -89,18 +88,18 @@ module.exports.updateProductQuantityInCart = catchError(async (req, res) => {
 });
 
 module.exports.removeProductFromCart = catchError(async (req, res) => {
-    const userId = extractUserIdFromToken(req); 
-    const { productId } = req.params; 
+    const userId = extractUserIdFromToken(req);
+    const { productId } = req.params;
 
     if (!productId) {
         return res.status(400).json({ msg: "Product ID is required" });
     }
-    const cart = await cartModel.findOne({ userId: userId });
+    const cart = await cartModel.findOne({ userId });
     if (!cart) {
         return res.status(404).json({ msg: "Cart not found" });
     }
     const itemIndex = cart.items.findIndex((item) => item.productId.toString() === productId.toString());
-    
+
     if (itemIndex === -1) {
         return res.status(404).json({ msg: "Product not found in cart" });
     }
@@ -108,13 +107,13 @@ module.exports.removeProductFromCart = catchError(async (req, res) => {
     cart.totalQuantity = cart.items.reduce((acc, item) => acc + item.quantity, 0);
     cart.totalPrice = cart.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     await cart.save();
-    
+
     res.json({ msg: "Product removed from cart", cart });
 });
 
 module.exports.getCartForUser = catchError(async (req, res) => {
-    const userId = extractUserIdFromToken(req); 
-    const cart = await cartModel.findOne({ userId: userId }).populate({
+    const userId = extractUserIdFromToken(req);
+    const cart = await cartModel.findOne({ userId }).populate({
         path: 'items.productId',
         model: Product,
     });
@@ -128,8 +127,8 @@ module.exports.getCartForUser = catchError(async (req, res) => {
 });
 
 module.exports.clearCart = catchError(async (req, res) => {
-    const userId = extractUserIdFromToken(req); 
-    let cart = await cartModel.findOne({ userId: userId });
+    const userId = extractUserIdFromToken(req);
+    let cart = await cartModel.findOne({ userId });
     if (!cart) {
         return res.status(404).json({ msg: "Cart not found for this user" });
     }
@@ -149,7 +148,7 @@ module.exports.processCashPayment = catchError(async (req, res) => {
         return res.status(400).json({ error: 'Missing required fields: userId and items are required.' });
     }
     try {
-        const user = await userModel.findById(userId);
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
