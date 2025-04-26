@@ -1,6 +1,6 @@
 const cartModel = require('./cart.model');
 const orderModel = require('../order/order.model');
-const product_model = require('../product/product_model');
+const Product = require('../product/product_model');
 const userModel = require('../auth/user.model');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
@@ -29,7 +29,7 @@ export const addProductToCart = catchError(async (req, res) => {
         return res.status(400).json({ msg: "Product ID is required" });
     }
 
-    const product = await product_model.findById(productId);
+    const product = await Product.findById(productId);
     if (!product) {
         return res.status(404).json({ msg: "Product not found" });
     }
@@ -116,7 +116,7 @@ export const getCartForUser = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req); 
     const cart = await cartModel.findOne({ userId: userId }).populate({
         path: 'items.productId',
-        model: product_model,
+        model: Product,
     });
     if (!cart) {
         return res.status(404).json({ msg: "Cart not found" });
@@ -158,7 +158,7 @@ export const processCashPayment = catchError(async (req, res) => {
         const availableItems = [];
 
         for (const item of items) {
-            const product = await product_model.findById(item.productId);
+            const product = await Product.findById(item.productId);
             if (!product) {
                 return res.status(404).json({ error: `Product ID "${item.productId}" not found.` });
             }
