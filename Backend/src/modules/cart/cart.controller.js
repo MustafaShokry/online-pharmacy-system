@@ -21,7 +21,7 @@ const catchError = (fn) => (req, res, next) => {
 
 
 
-export const addProductToCart = catchError(async (req, res) => {
+module.exports.addProductToCart = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req); 
     const { productId } = req.body; 
 
@@ -63,7 +63,7 @@ export const addProductToCart = catchError(async (req, res) => {
     res.json({ msg: "Product added/updated in cart", cart });
 });
 
-export const updateProductQuantityInCart = catchError(async (req, res) => {
+module.exports.updateProductQuantityInCart = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req); 
     const { productId, quantity } = req.body; 
 
@@ -88,7 +88,7 @@ export const updateProductQuantityInCart = catchError(async (req, res) => {
     res.json({ msg: "Product quantity updated", cart });
 });
 
-export const removeProductFromCart = catchError(async (req, res) => {
+module.exports.removeProductFromCart = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req); 
     const { productId } = req.params; 
 
@@ -112,7 +112,7 @@ export const removeProductFromCart = catchError(async (req, res) => {
     res.json({ msg: "Product removed from cart", cart });
 });
 
-export const getCartForUser = catchError(async (req, res) => {
+module.exports.getCartForUser = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req); 
     const cart = await cartModel.findOne({ userId: userId }).populate({
         path: 'items.productId',
@@ -127,7 +127,7 @@ export const getCartForUser = catchError(async (req, res) => {
     return res.json({ msg: "Cart retrieved successfully", cart });
 });
 
-export const clearCart = catchError(async (req, res) => {
+module.exports.clearCart = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req); 
     let cart = await cartModel.findOne({ userId: userId });
     if (!cart) {
@@ -142,7 +142,7 @@ export const clearCart = catchError(async (req, res) => {
     res.json({ msg: "Cart cleared successfully", cart });
 });
 
-export const processCashPayment = catchError(async (req, res) => {
+module.exports.processCashPayment = catchError(async (req, res) => {
     const { userId, items } = req.body;
 
     if (!userId || !items) {
@@ -210,7 +210,7 @@ const PAYMOB_API_KEY = process.env.PAYMOB_API_KEY;
 const INTEGRATION_ID = process.env.PAYMOB_INTEGRATION_ID;
 const IFRAME_ID = process.env.PAYMOB_IFRAME_ID;
 
-export const processVisaPayment = async (req, res) => {
+module.exports.processVisaPayment = async (req, res) => {
     const { amount, currency } = req.body;
 
     try {
