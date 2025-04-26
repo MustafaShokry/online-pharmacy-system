@@ -1,4 +1,4 @@
-import { mongoose } from 'mongoose';
+const mongoose = require('mongoose');
 
 const cartSchema = new mongoose.Schema(
     {
@@ -17,11 +17,13 @@ const cartSchema = new mongoose.Schema(
                 quantity: { 
                     type: Number, 
                     required: true, 
-                    default: 1 
+                    default: 1,
+                    min: [1, 'Quantity must be at least 1']
                 },
                 price: { 
                     type: Number, 
-                    required: true 
+                    required: true,
+                    min: [0, 'Price must be a non-negative value']
                 }
             }
         ],
@@ -41,9 +43,13 @@ const cartSchema = new mongoose.Schema(
 
 // Pre-save hook to calculate totalQuantity and totalPrice
 cartSchema.pre('save', function (next) {
-    this.totalQuantity = this.items.reduce((sum, item) => sum + item.quantity, 0);
-    this.totalPrice = this.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
-    next();
+    try {
+        this.totalQuantity = this.items.reduce((sum, item) => sum + item.quantity, 0);
+        this.totalPrice = this.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+        next();
+    } catch (error) {
+        next(error);
+    }
 });
 
-export const cartModel = mongoose.model('Cart', cartSchema);
+module.exports = mongoose.model('Cart', cartSchema);
