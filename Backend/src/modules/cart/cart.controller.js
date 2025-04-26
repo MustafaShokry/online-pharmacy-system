@@ -7,7 +7,7 @@ const axios = require('axios');
 
 const extractUserIdFromToken = (req) => {
     const token = req.headers.token; 
-    if (!token) throw new Error('Token missing');
+    if (!token) throw new AppError('Token missing', 401);
     const decoded = jwt.verify(token, process.env.JWT_SECRET); 
     return decoded.userId; 
 };
