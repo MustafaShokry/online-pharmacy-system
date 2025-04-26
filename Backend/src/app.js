@@ -3,6 +3,7 @@ const cors = require('cors');
 const errorHandler = require('./middleware/error.middleware');
 const notFoundHandler = require('./middleware/notFound.middleware');
 const authRoutes = require('./modules/auth/auth.routes');
+const productRouter = require('./modules/product/product_router');
 
 
 function createApp() {
@@ -17,14 +18,18 @@ function createApp() {
         res.send("Hello World!");
     })
 
+
     // Mount routes
     app.use('/api/auth', authRoutes);
+    // Product Routes
+    app.use('/products',productRouter)
 
     // 404 Not Found Handler
     app.use(notFoundHandler);
 
     // Central Error Handler
     app.use(errorHandler);
+    
 
     return app;
 }

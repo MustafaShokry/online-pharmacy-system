@@ -7,10 +7,10 @@ RUN npm install -g nodemon
 RUN npm install
 COPY . .
 EXPOSE 3000
-CMD ["nodemon", "index.js"]
+CMD ["sh", "-c", "mkdir -p images && nodemon index.js"]
 
 FROM base AS production
 RUN npm install
 COPY . .
 EXPOSE 3000
-CMD ["node", "index.js"]
+CMD ["sh", "-c", "mkdir -p images && node index.js"]
