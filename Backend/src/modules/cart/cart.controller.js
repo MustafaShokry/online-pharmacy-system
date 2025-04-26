@@ -8,7 +8,7 @@ import axios from "axios";
 const extractUserIdFromToken = (req) => {
     const token = req.headers.token; 
     if (!token) throw new Error('Token missing');
-    const decoded = jwt.verify(token, 'ahmedrafat123'); 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
     return decoded.userId; 
 };
 
