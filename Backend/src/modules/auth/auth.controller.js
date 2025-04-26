@@ -18,3 +18,30 @@ exports.login = async (req, res, next) => {
     }
 };
 
+exports.forgotPassword = async (req, res, next) => {
+    try {
+        await authService.forgotPassword(req.body.email);
+        res.status(200).json({ message: 'Reset link sent if email exists' });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.resetPassword = async (req, res, next) => {
+    try {
+        await authService.resetPassword(req.params.token, req.body.password);
+        res.status(200).json({ message: 'Password has been reset successfully' });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.changePassword = async (req, res, next) => {
+    try {
+        await authService.changePassword(req.user.id, req.body);
+        res.status(200).json({ message: 'Password changed successfully' });
+    } catch (err) {
+        next(err);
+    }
+};
+
