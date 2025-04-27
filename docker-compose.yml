@@ -29,7 +29,7 @@
       restart: always
       environment:
         - MONGODB_URI=mongodb://database:27017/pharmacy?directConnection=true
-        - CHOKIDAR_USEPolling=true
+        - CHOKIDAR_USEPOLLING=true
       networks:
         - pharmacy-front-network
         - pharmacy-back-network
