@@ -1,4 +1,4 @@
-const Product = require('./product_model');
+const Product = require('./product.model');
 const fs = require('fs');
 const path = require('path');
 
@@ -8,7 +8,7 @@ exports.getAllProducts = async (req, res) => {
         const products = await Product.find();
         res.status(200).json(products);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching products', error });
+        next(error);
     }
 };
 
@@ -32,7 +32,7 @@ exports.addProduct = async (req, res) => {
         const savedProduct = await newProduct.save();
         res.status(201).json(savedProduct);
     } catch (error) {
-        res.status(500).json({ message: 'Error adding product', error });
+        next(error);
     }
 };
 
@@ -54,7 +54,7 @@ exports.updateProduct = async (req, res) => {
 
         res.status(200).json(updatedProduct);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating product', error });
+        next(error);
     }
 };
 
@@ -78,7 +78,7 @@ exports.deleteProduct = async (req, res) => {
 
         res.status(200).json({ message: 'Product deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting product', error });
+        next(error);
     }
 };
 
@@ -106,6 +106,6 @@ exports.getProductsByCategory = async (req, res) => {
             }))
          });
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching products by category', error });
+        next(error);
     }
 };

@@ -1,5 +1,5 @@
 // seed.js
-const Product = require('./product_model'); // Adjust the path if needed
+const Product = require('./product.model'); // Adjust the path if needed
 
 const sampleProducts = [
   // Bones category (6 products)
