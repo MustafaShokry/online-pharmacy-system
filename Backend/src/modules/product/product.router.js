@@ -23,9 +23,9 @@ const upload = multer({ storage });
 
 // Routes
 router.get('/getAllProducts', authenticate, productController.getAllProducts);
-router.post('/addProduct', authenticate, authorize, upload.single('image'), validate(addProductDto), productController.addProduct); // Handle image upload
-router.put('/updateProduct', authenticate, authorize, upload.single('image'), validate(updateProductDto), productController.updateProduct); // Handle image upload
-router.delete('/deleteProduct', authenticate, authorize, productController.deleteProduct);
+router.post('/addProduct', authenticate, authorize('admin'), upload.single('image'), validate(addProductDto), productController.addProduct); // Handle image upload
+router.put('/updateProduct', authenticate, authorize('admin'), upload.single('image'), validate(updateProductDto), productController.updateProduct); // Handle image upload
+router.delete('/deleteProduct', authenticate, authorize('admin'), productController.deleteProduct);
 router.use('/category', authenticate, productController.getProductsByCategory);
 
 module.exports = router;
