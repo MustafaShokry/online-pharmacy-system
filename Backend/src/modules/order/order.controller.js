@@ -1,5 +1,5 @@
 const orderModel = require('./order.model');
-const productModel = require('../product/product_model'); // Assuming product model exists
+const productModel = require('../product/product.model'); // Assuming product model exists
 const AppError = require('../../utils/AppError'); // Assuming AppError exists
 const mongoose = require('mongoose');
 

@@ -3,7 +3,7 @@ const cors = require('cors');
 const errorHandler = require('./middleware/error.middleware');
 const notFoundHandler = require('./middleware/notFound.middleware');
 const authRoutes = require('./modules/auth/auth.routes');
-const productRouter = require('./modules/product/product_router');
+const productRouter = require('./modules/product/product.router');
 
 
 function createApp() {

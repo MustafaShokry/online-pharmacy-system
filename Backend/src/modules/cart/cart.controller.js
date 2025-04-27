@@ -1,6 +1,6 @@
 const cartModel = require('./cart.model');
 const orderModel = require('../order/order.model');
-const Product = require('../product/product_model');
+const Product = require('../product/product.model');
 const User = require('../auth/user.model');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
