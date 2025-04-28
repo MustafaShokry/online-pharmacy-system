@@ -18,6 +18,6 @@ orderRouter.get('/all', authenticate, authorize('admin'), getAllOrders);
 orderRouter.get('/:orderId', authenticate, param('orderId').isMongoId().withMessage('Invalid order ID'), getOrderDetails);
 
 // PUT /orders/:orderId/status - Update the status of an order
-orderRouter.put('/:orderId/status', authenticate, param('orderId').isMongoId().withMessage('Invalid order ID'), updateOrderStatus);
+orderRouter.put('/:orderId/status', authenticate, authorize('admin'), param('orderId').isMongoId().withMessage('Invalid order ID'), updateOrderStatus);
 
 module.exports = orderRouter;
