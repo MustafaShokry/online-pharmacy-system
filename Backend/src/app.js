@@ -4,9 +4,11 @@ const errorHandler = require('./middleware/error.middleware');
 const notFoundHandler = require('./middleware/notFound.middleware');
 const authRoutes = require('./modules/auth/auth.routes');
 const productRouter = require('./modules/product/product.router');
+const wishListRouter = require('./modules/wishList/wishList.routes');
 const OrderRouter = require('./modules/order/order.routes');
 const CartRouter = require('./modules/cart/cart.routes');
 const productSeeder = require('./modules/product/product.seed');
+
 
 function createApp() {
 
@@ -28,11 +30,12 @@ function createApp() {
     app.use('/api/auth', authRoutes);
     // Product Routes
     app.use('/products',productRouter)
+    // Wish List Routes
+    app.use('/api/wishList', wishListRouter);  
     // Order Routes
     app.use('/orders',OrderRouter)
     // Cart Routes
     app.use('/cart',CartRouter)
-
 
     // 404 Not Found Handler
     app.use(notFoundHandler);
