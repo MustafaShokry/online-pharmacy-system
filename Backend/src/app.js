@@ -4,6 +4,7 @@ const errorHandler = require('./middleware/error.middleware');
 const notFoundHandler = require('./middleware/notFound.middleware');
 const authRoutes = require('./modules/auth/auth.routes');
 const productRouter = require('./modules/product/product.router');
+const wishListRouter = require('./modules/wishList/wishList.routes');
 
 
 function createApp() {
@@ -23,6 +24,9 @@ function createApp() {
     app.use('/api/auth', authRoutes);
     // Product Routes
     app.use('/products',productRouter)
+    
+  // Wish List Routes
+    app.use('/api/wishList', wishListRouter);  
 
     // 404 Not Found Handler
     app.use(notFoundHandler);
