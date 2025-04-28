@@ -9,6 +9,7 @@ const wishListRouter = require('./modules/wishList/wishList.routes');
 const OrderRouter = require('./modules/order/order.routes');
 const CartRouter = require('./modules/cart/cart.routes');
 const productSeeder = require('./modules/product/product.seed');
+const alternativeRouter = require('./modules/alternative/alternative.routes');
 
 
 function createApp() {
@@ -39,6 +40,8 @@ function createApp() {
     app.use('/orders',OrderRouter)
     // Cart Routes
     app.use('/cart',CartRouter)
+    // Alternative routes
+    app.use('/api/alternative', alternativeRouter);
 
     // 404 Not Found Handler
     app.use(notFoundHandler);

@@ -40,11 +40,17 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
         required: false
-    }, 
+    },
+  alternatives: [
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }
+  ],
 },
 { timestamps: true }
 );
 
-const product_model = mongoose.model('product_model', productSchema);
+const product_model = mongoose.model('Product', productSchema);
 
 module.exports = product_model;

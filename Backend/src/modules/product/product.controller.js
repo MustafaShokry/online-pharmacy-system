@@ -5,7 +5,7 @@ const path = require('path');
 // Get all products
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.find();
+        const products = await Product.find().populate('alternatives');
         res.status(200).json(products);
     } catch (error) {
         next(error);
@@ -89,7 +89,7 @@ exports.getProductsByCategory = async (req, res) => {
         if (!category) {
             return res.status(400).json({ success: false, message: 'Category is Miss.' });
         }
-        const products = await Product.find({ category });
+        const products = await Product.find({ category }).populate('alternatives');
         const productCount = products.length;
         res.status(200).json({ 
             success: true,
