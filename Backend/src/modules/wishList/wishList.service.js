@@ -58,7 +58,6 @@ const removeFromWishList = async function(userId, productId) {
   // Remove the product from the user's wish wishList
   user.wishlist = user.wishlist.filter(product => product.toString() !== productId.toString());
   await user.save();
-  return user.wishlist;
 }
 
 const clearWishList = async function(userId) {
@@ -70,7 +69,6 @@ const clearWishList = async function(userId) {
   // Clear the user's wish wishList
   user.wishlist = [];
   await user.save();
-  return user.wishlist;
 }
 
 module.exports.addToWishList = addToWishList;
