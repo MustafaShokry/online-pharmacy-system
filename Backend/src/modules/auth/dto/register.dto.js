@@ -8,7 +8,7 @@ const createUserDto = Joi.object({
     confirmPassword: Joi.any().valid(Joi.ref('password')).required().messages({
         'any.only': 'Passwords do not match'
     }),
-    phone: Joi.string().trim().pattern(/^\+20(10|11|12|15)\d{8}$/).required(),
+    phone: Joi.string().trim().pattern(/^0(10|11|12|15)\d{8}$/).required(),
     age: Joi.number().integer().min(1).max(120).required(),
     gender: Joi.string().valid('male', 'female').required(),
     address: Joi.object({
