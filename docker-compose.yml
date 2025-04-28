@@ -1,13 +1,13 @@
   services:
     frontend:
       build:
-        context: frontend
+        context: Frontend
         target: development
       ports:
         - 3020:3000 
       stdin_open: true
       volumes:
-        - ./frontend:/usr/src/app
+        - ./Frontend:/usr/src/app
         - /usr/src/app/node_modules
       restart: always
       environment:
@@ -21,10 +21,10 @@
 
     backend:
       build:
-        context: backend
+        context: Backend
         target: development
       volumes:
-        - ./backend:/usr/src/app
+        - ./Backend:/usr/src/app
         - /usr/src/app/node_modules
       restart: always
       environment:
