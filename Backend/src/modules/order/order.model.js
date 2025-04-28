@@ -19,7 +19,7 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['cash', 'credit_card', 'paypal'], // Updated to match supported payment methods
+        enum: ['cash', 'Credit Card', 'paypal'], // Updated to match supported payment methods
         default: 'cash'
     },
     paymobOrderId: { type: String, default: null }, // Added default value

@@ -13,7 +13,7 @@
       environment:
         - BACKEND_URI=http://backend:3000
       env_file:
-        - ./Frontend/.env
+        - ./frontend/.env
       networks:
         - pharmacy-front-network
       depends_on:
