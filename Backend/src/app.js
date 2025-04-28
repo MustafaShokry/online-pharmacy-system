@@ -4,9 +4,14 @@ const errorHandler = require('./middleware/error.middleware');
 const notFoundHandler = require('./middleware/notFound.middleware');
 const authRoutes = require('./modules/auth/auth.routes');
 const productRouter = require('./modules/product/product.router');
-
+const OrderRouter = require('./modules/order/order.routes');
+const CartRouter = require('./modules/cart/cart.routes');
+const productSeeder = require('./modules/product/product.seed');
 
 function createApp() {
+
+    // productSeeder();
+    
     const app = express();
 
     // Global Middlewares
@@ -23,6 +28,11 @@ function createApp() {
     app.use('/api/auth', authRoutes);
     // Product Routes
     app.use('/products',productRouter)
+    // Order Routes
+    app.use('/orders',OrderRouter)
+    // Cart Routes
+    app.use('/cart',CartRouter)
+
 
     // 404 Not Found Handler
     app.use(notFoundHandler);

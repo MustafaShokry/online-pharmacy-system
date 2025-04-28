@@ -67,38 +67,25 @@ const updateOrderStatus = async (req, res, next) => {
         }
 
         if (status === 'completed') {
-            const session = await mongoose.startSession();
-            session.startTransaction();
-
-            try {
-                const productChecks = await Promise.all(order.items.map(item =>
-                    productModel.findById(item.productId).session(session)
-                ));
-
-                const isAvailable = productChecks.every((product, index) => 
-                    product && product.quantity >= order.items[index].quantity
-                );
-
-                if (!isAvailable) {
-                    await session.abortTransaction();
-                    throw new AppError('Order canceled due to insufficient product quantity.', 400);
-                }
-
-                await Promise.all(order.items.map(async (item) => {
-                    const product = await productModel.findById(item.productId).session(session);
-                    if (product) {
-                        product.quantity -= item.quantity;
-                        await product.save({ session });
-                    }
-                }));
-
-                await session.commitTransaction();
-            } catch (error) {
-                await session.abortTransaction();
-                throw error;
-            } finally {
-                session.endSession();
+            const productChecks = await Promise.all(order.items.map(item =>
+                productModel.findById(item.productId)
+            ));
+        
+            const isAvailable = productChecks.every((product, index) =>
+                product && product.quantity >= order.items[index].quantity
+            );
+        
+            if (!isAvailable) {
+                throw new AppError('Order canceled due to insufficient product quantity.', 400);
             }
+        
+            await Promise.all(order.items.map(async (item) => {
+                const product = await productModel.findById(item.productId);
+                if (product) {
+                    product.quantity -= item.quantity;
+                    await product.save();
+                }
+            }));
         }
 
         const updatedOrder = await orderModel.findByIdAndUpdate(orderId, { status }, { new: true });

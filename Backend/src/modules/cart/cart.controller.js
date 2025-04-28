@@ -7,7 +7,7 @@ const axios = require('axios');
 const AppError = require('../../utils/AppError');
 
 // Ensure required environment variables are present
-if (!process.env.JWT_SECRET || !process.env.PAYMOB_API_KEY || !process.env.INTEGRATION_ID || !process.env.IFRAME_ID) {
+if (!process.env.JWT_SECRET || !process.env.PAYMOB_API_KEY || !process.env.PAYMOB_INTEGRATION_ID || !process.env.PAYMOB_IFRAME_ID) {
     throw new Error('Missing required environment variables');
 }
 
@@ -17,8 +17,10 @@ const extractUserIdFromToken = (req) => {
         throw new AppError('Authorization token missing or invalid', 401);
     }
     const token = authHeader.split(' ')[1];
+    console.log(token);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return decoded.userId;
+    console.log(decoded);
+    return decoded;
 };
 
 const catchError = (fn) => (req, res, next) => {
@@ -35,7 +37,8 @@ const recalculateCartTotals = (cart) => {
 };
 
 module.exports.addProductToCart = catchError(async (req, res) => {
-    const userId = extractUserIdFromToken(req);
+    const userId = extractUserIdFromToken(req).id;
+    console.log(userId);
     const { productId } = req.body;
 
     if (!productId) {
@@ -74,7 +77,7 @@ module.exports.addProductToCart = catchError(async (req, res) => {
 });
 
 module.exports.updateProductQuantityInCart = catchError(async (req, res) => {
-    const userId = extractUserIdFromToken(req);
+    const userId = extractUserIdFromToken(req).id;
     const { productId, quantity } = req.body;
 
     if (!productId || !quantity || quantity < 1) {
@@ -98,7 +101,7 @@ module.exports.updateProductQuantityInCart = catchError(async (req, res) => {
 });
 
 module.exports.removeProductFromCart = catchError(async (req, res) => {
-    const userId = extractUserIdFromToken(req);
+    const userId = extractUserIdFromToken(req).id;
     const { productId } = req.params;
 
     if (!productId) {
@@ -123,7 +126,7 @@ module.exports.removeProductFromCart = catchError(async (req, res) => {
 });
 
 module.exports.getCartForUser = catchError(async (req, res) => {
-    const userId = extractUserIdFromToken(req);
+    const userId = extractUserIdFromToken(req).id;
     const cart = await cartModel.findOne({ userId }).populate({
         path: 'items.productId',
         model: Product,
@@ -141,7 +144,7 @@ module.exports.getCartForUser = catchError(async (req, res) => {
 });
 
 module.exports.clearCart = catchError(async (req, res) => {
-    const userId = extractUserIdFromToken(req);
+    const userId = extractUserIdFromToken(req).id;
     const cart = await cartModel.findOne({ userId });
 
     if (!cart) {
