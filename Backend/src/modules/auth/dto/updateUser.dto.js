@@ -13,6 +13,7 @@ const updateUserDto = Joi.object({
         city: Joi.string(),
         state: Joi.string(),
         country: Joi.string(),
+        zipCode: Joi.string().pattern(/^\d{5}$/)
     }),
 });
 

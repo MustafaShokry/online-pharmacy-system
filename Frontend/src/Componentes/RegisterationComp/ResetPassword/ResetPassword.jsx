@@ -48,7 +48,7 @@ export default function ResetPassword() {
     onSubmit: (values) => {
       setLoading(true);
 
-      axios.post(`${BaseUrl}/users/reset-password`, values)
+      axios.post(`${BaseUrl}/api/auth/reset-password`, values)
         .then((response) => {
           if (response.status === 200) {
             setLoading(false)

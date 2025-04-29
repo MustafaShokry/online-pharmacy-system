@@ -43,7 +43,15 @@ const AddProduct = () => {
         }
 
         try {
-            await axios.post(`${BaseUrl}/products/addProduct`, productData);
+
+            const token = localStorage.getItem("token");
+
+            await axios.post(`${BaseUrl}/products/addProduct`, productData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Important
+                    'Authorization': `Bearer ${token}`      // Token
+                }
+            });
             setSuccessMessage("Product added successfully!");
             setErrorMessage("")
             setFormData({

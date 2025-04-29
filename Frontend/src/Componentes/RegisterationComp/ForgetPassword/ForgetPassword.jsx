@@ -34,7 +34,7 @@ export default function ForgetPassword() {
     onSubmit: (values) => {
       setLoading(true);
 
-      axios.post(`${BaseUrl}/users/forget-password`, values)
+      axios.post(`${BaseUrl}/api/auth/forgot-password`, values)
         .then((response) => {
           if (response.status === 200) {
             notify('Success 💊', 'success');

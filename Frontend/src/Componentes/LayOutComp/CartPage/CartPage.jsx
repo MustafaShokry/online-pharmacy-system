@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FetchCartContext } from './../../../Context/Cart';
 import { mediaContext } from './../../../Context/MediaStore';
-import styles from './CartPage.module.scss'; 
+import styles from './CartPage.module.scss';
 import { Container } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import Footer from '../../Ui/Footer/Footer';
@@ -11,11 +11,12 @@ import { useNavigate } from 'react-router-dom';
 import { BaseUrl } from '../../BaseUrl/base'
 
 const CartPage = () => {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const { cart, UpdateProductCart, deleteProductCart, clearCart } = useContext(FetchCartContext);
     const { userData } = useContext(mediaContext);
 
     const cartItems = cart?.items || [];
+    console.log('Cart Items:', cartItems); // Log the cart items
 
     const [totals, setTotals] = useState({
         subtotal: 0,
@@ -27,7 +28,7 @@ const CartPage = () => {
 
     useEffect(() => {
         const subtotal = cartItems.reduce((acc, item) => {
-            const price = item.productId.offer? parseFloat(item.productId.price)*0.8 : parseFloat(item.productId.price);
+            const price = item.productId.offer ? parseFloat(item.productId.price) * 0.8 : parseFloat(item.productId.price);
             const count = item.quantity;
 
             if (!isNaN(price) && !isNaN(count)) {
@@ -35,7 +36,7 @@ const CartPage = () => {
             }
             return acc;
         }, 0);
-        
+
         const totalPrice = subtotal + totals.shippingFees;
 
         setTotals({ subtotal, shippingFees: totals.shippingFees, totalPrice });
@@ -50,17 +51,27 @@ const CartPage = () => {
     };
     const handleCashPayment = async () => {
         try {
-            const response = await axios.post(`${BaseUrl}/carts/payment/cash`, {
-                userId: userData.userId,
+            const token = localStorage.getItem('token');
+            console.log('Token:', token); // Log the token
+            console.log('User Data:', cart.items); // Log the user data
+            const response = await axios.post(`${BaseUrl}/cart/payment/cash`, {
+                userId: userData.id,
                 items: cart.items.map(item => ({
                     productId: item.productId._id,
                     quantity: item.quantity,
-                })),
-            });
+                }
+                )),
+            },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                });
             if (!response.data.success) {
                 throw new Error('Cash payment failed.');
             }
-            toast.success('Cash payment successful. ' , {
+            toast.success('Cash payment successful. ', {
                 autoClose: 2000,
                 theme: 'dark',
                 position: 'top-center',
@@ -75,33 +86,33 @@ const CartPage = () => {
             });
         }
     };
-    
+
     const handleVisaPayment = async () => {
         try {
             const payload = {
                 userId: userData.userId,
                 items: cart.items.map(item => ({
-                    productId: item.productId._id,
+                    productId: item._id,
                     quantity: item.quantity,
                 })),
                 paymentMethod: 'Credit Card',
             };
             console.log('Request Payload:', payload); // Log the request payload
-    
-            const response = await axios.post(`${BaseUrl}/payment/create-payment`, payload);
-    
+
+            const response = await axios.post(`${BaseUrl}/api/paymob/create-payment`, payload);
+
             if (!response.data.paymentToken) {
                 throw new Error('Payment token is missing from the response.');
             }
-    
-            const orderId = response.data.orderId; 
+
+            const orderId = response.data.orderId;
             const paymentUrl = `https://accept.paymobsolutions.com/api/acceptance/iframes/${871391}?payment_token=${response.data.paymentToken}`;
-            
+
             window.open(paymentUrl, '_blank');
-    
-            clearCart(); 
+
+            clearCart();
             //await completePayment(orderId);
-    
+
         } catch (error) {
             console.error('Payment Error:', error);
             toast.error('Payment failed. Please try again.', {
@@ -111,9 +122,9 @@ const CartPage = () => {
             });
         }
     };
-    
+
     const handleQuantityChange = (productId, newCount, stockQuantity) => {
-        const item = cart.items.find(item => item.productId._id === productId);
+        const item = cart.items.find(item => item._id === productId);
         if (!item) return;
 
         if (newCount > stockQuantity) {
@@ -153,44 +164,44 @@ const CartPage = () => {
                     <div className="col-12 col-lg-8">
                         {cart.items.length === 0 ? (
                             <div className={styles.emptyCartContainer}>
-                            <img src={emptyCartImage} alt="Your cart is empty" className={`img-fluid ${styles.emptyCartImage}`} />
-                            {/* <p className={styles.emptyCartMessage}>Your cart is empty.</p> */}
-                            <button onClick={() => navigate('/products')} className={styles.browseProductsButton}>
-                                Browse Products
-                            </button>
-                        </div>
+                                <img src={emptyCartImage} alt="Your cart is empty" className={`img-fluid ${styles.emptyCartImage}`} />
+                                {/* <p className={styles.emptyCartMessage}>Your cart is empty.</p> */}
+                                <button onClick={() => navigate('/products')} className={styles.browseProductsButton}>
+                                    Browse Products
+                                </button>
+                            </div>
                         ) : (
                             <div className={styles.cartItems}>
                                 {cart.items.map(item => (
-                                    <div key={item.productId._id} className={`row mb-3 ${styles.cartItem}`}>
+                                    <div key={item._id} className={`row mb-3 ${styles.cartItem}`}>
                                         <div className="col-12 d-flex align-items-center">
-                                            <img 
-                                                src={`${BaseUrl}/${item.productId.image}`} 
-                                                alt={item.productId.name} 
-                                                className={`img-fluid ${styles.cartItemImage}`} 
+                                            <img
+                                                src={`${BaseUrl}/${item.productId.image}`}
+                                                alt={item.productId.name}
+                                                className={`img-fluid ${styles.cartItemImage}`}
                                             />
                                             <div className={`d-flex flex-column ${styles.cartItemDetails}`}>
                                                 <h4 className={styles.cartItemTitle}>{item.productId.name}</h4>
                                                 <p className={styles.cartItemDescription}>{item.productId.description}</p>
-                                                <p className={styles.cartItemPrice}>Price: {item.productId.offer? parseFloat(item.productId.price*0.8).toFixed(2) :parseFloat(item.productId.price).toFixed(2)}EG</p>
-                                                <p className={styles.cartItemStock}>Total in Stock: {item.productId.quantity} units</p>
+                                                <p className={styles.cartItemPrice}>Price: {item.productId.offer ? parseFloat(item.productId.price * 0.8).toFixed(2) : parseFloat(item.productId.price).toFixed(2)}EG</p>
+                                                <p className={styles.cartItemStock}>Total in Stock: {item.quantity} units</p>
                                                 <div className={`d-flex align-items-center ${styles.cartItemQuantity}`}>
-                                                    <button 
-                                                        onClick={() => handleQuantityChange(item.productId._id, item.quantity - 1, item.productId.quantity)}
+                                                    <button
+                                                        onClick={() => handleQuantityChange(item._id, item.quantity - 1, item.quantity)}
                                                         className={`btn btn-secondary ${styles.quantityButton}`}
                                                     >
                                                         -
                                                     </button>
                                                     <span className={styles.quantityCount}>{item.quantity}</span>
-                                                    <button 
-                                                        onClick={() => handleQuantityChange(item.productId._id, item.quantity + 1, item.productId.quantity)}
+                                                    <button
+                                                        onClick={() => handleQuantityChange(item._id, item.quantity + 1, item.quantity)}
                                                         className={`btn btn-secondary ${styles.quantityButton}`}
                                                     >
                                                         +
                                                     </button>
                                                 </div>
-                                                <button 
-                                                    onClick={() => deleteProductCart(item.productId._id)} 
+                                                <button
+                                                    onClick={() => deleteProductCart(item.productId._id)}
                                                     className={`btn btn-outline-danger mt-4`}
                                                 >
                                                     Remove From Cart <i className="fa-solid fa-cart-shopping"></i>
@@ -233,8 +244,8 @@ const CartPage = () => {
                             >
                                 CHECKOUT
                             </button> */}
-                            <button 
-                                onClick={() => clearCart()} 
+                            <button
+                                onClick={() => clearCart()}
                                 className={`btn btn-danger ${styles.clearCartButton}`}
                             >
                                 Clear Cart
@@ -244,8 +255,8 @@ const CartPage = () => {
                         <div className={styles.cartSummary}>
                             <h4 className={styles.h4}>Payment Method</h4>
                             <div className={styles['payment-options']}>
-                                <div 
-                                    className={styles['payment-option']} 
+                                <div
+                                    className={styles['payment-option']}
                                     onClick={() => setPaymentMethod('visa')}
                                     style={{
                                         borderColor: paymentMethod === 'visa' ? '#00f' : '#ddd',
@@ -260,8 +271,8 @@ const CartPage = () => {
                                         <span className={styles['payment-description']}>Monthly installments plans available</span>
                                     </div>
                                 </div>
-                                <div 
-                                    className={styles['payment-option']} 
+                                <div
+                                    className={styles['payment-option']}
                                     onClick={() => setPaymentMethod('cash')}
                                     style={{
                                         borderColor: paymentMethod === 'cash' ? '#00f' : '#ddd',

@@ -16,7 +16,7 @@ const createUserDto = Joi.object({
         city: Joi.string().trim().required(),
         state: Joi.string().trim().required(),
         country: Joi.string().trim().required(),
-        zipCode: Joi.string().trim().pattern(/^\d{5}$/).required()
+        zipCode: Joi.string().trim().pattern(/^\d{5}$/)
     }).required(),
     role: Joi.string().valid('user', 'admin').default('user'),
     wishlist: Joi.array().items(Joi.string().hex().length(24)) // MongoDB ObjectIds

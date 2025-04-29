@@ -23,15 +23,23 @@ const Orders = () => {
         const fetchOrders = async () => {
             setLoading(true);
             setError('');
-        
+
             try {
-                const endpoint = Role === 'admin' ? `${BaseUrl}/orders/getAllOrders` : `${BaseUrl}/orders/getOrders?userId=${userData.userId}`;
-                const response = await axios.get(endpoint);
-        
+                const endpoint = Role === 'admin' ? `${BaseUrl}/orders/all` : `${BaseUrl}/orders/`;
+                const token = localStorage.getItem("token"); // Get the token
+
+                const response = await axios.get(endpoint, {
+                    headers: {
+                        Authorization: `Bearer ${token}` // Add Authorization header
+                    }
+                });
+
+                console.log(response.data.data)
                 if (response.data.success) {
-                    if (Array.isArray(response.data.orders)) {
-                        if (response.data.orders.length > 0) {
-                            setOrders(response.data.orders);
+                    if (Array.isArray(response.data.data)) {
+                        if (response.data.data.length > 0) {
+                            setOrders(response.data.data);
+                            console.log("done")
                         } else {
                             throw new Error('No orders found.');
                         }
@@ -47,14 +55,14 @@ const Orders = () => {
             } finally {
                 setLoading(false);
             }
-        };             
+        };
 
         fetchOrders();
     }, [userData, Role]);
 
     const openModal = (order) => {
         setSelectedOrder(order);
-        setStatusToUpdate(order.status); 
+        setStatusToUpdate(order.status);
     };
 
     const closeModal = () => {
@@ -69,12 +77,18 @@ const Orders = () => {
             return;
         }
 
-        if (!['pending', 'canceled','completed'].includes(statusToUpdate)) return;
+        if (!['pending', 'canceled', 'completed'].includes(statusToUpdate)) return;
 
         try {
-            const response = await axios.put(`https://pharmacy-backend845-ezf4.vercel.app/orders/${selectedOrder._id}/updateStatus`, {
+            const response = await axios.put(`${BaseUrl}/orders/${selectedOrder._id}/status`, {
                 status: statusToUpdate,
-            });
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}` // Add Authorization header
+                    }
+                }
+            );
 
             if (response.data.success) {
                 setOrders((prevOrders) =>
@@ -110,16 +124,17 @@ const Orders = () => {
     return (
         <Container>
             <div className="row justify-content-center">
-                {Role==='user'?
+                {Role === 'user' ?
                     <h2 className={styles.name}>
-                    {userData.userName ? `${userData.userName}'s Orders` : "Your Orders"}
+
+                        {userData.firstName ? `${userData.firstName}'s Orders` : "Your Orders"}
                     </h2>
-                :
+                    :
                     <h2 className={styles.name}>
-                    Order Management
+                        Order Management
                     </h2>
                 }
-                {orders.length > 0? (
+                {orders.length > 0 ? (
                     orders.map((order) => (
                         <div key={order._id} className="col-lg-4 col-md-6 col-sm-10 mt-4 mb-4">
                             <div className={styles.card} onClick={() => openModal(order)}>
@@ -132,15 +147,16 @@ const Orders = () => {
                                     </h3>
                                 </div>
                                 <div className={styles.cardBody}>
-                                    {Role==='user'?
-                                    <>
-                                        <p><i className="fas fa-user"></i> User: {order.userId?.userName || 'N/A'}</p>
-                                        <p><i className="fas fa-envelope"></i> Email: {order.userId?.email || 'N/A'}</p>
-                                    </>
-                                    :
-                                    <>
-                                    <p><i className="fas fa-user"></i> User: {order.userId}</p>
-                                    </>
+                                    {Role === 'user' ?
+                                        <>
+                                            {console.log(order.userId._id)}
+                                            <p><i className="fas fa-user"></i> User: {order.userId?._id || 'N/A'}</p>
+                                            <p><i className="fas fa-envelope"></i> Email: {order.userId?.email || 'N/A'}</p>
+                                        </>
+                                        :
+                                        <>
+                                            <p><i className="fas fa-user"></i> User: {order.userId}</p>
+                                        </>
                                     }
                                     <p><i className="fas fa-credit-card"></i> Payment Method: {order.paymentMethod}</p>
                                     <p><i className="fas fa-calendar-alt"></i> Order Date: {new Date(order.createdAt).toLocaleDateString()}</p>
@@ -171,23 +187,22 @@ const Orders = () => {
                     {selectedOrder ? (
                         <>
                             <h5 className={styles.modalOrderId}>Order ID: {selectedOrder._id}</h5>
-                            {Role==='user'?
+                            {Role === 'user' ?
                                 <>
-                                <p><i className="fas fa-user"></i> User: {selectedOrder.userId?.userName || 'N/A'}</p>
-                                <p><i className="fas fa-envelope"></i> Email: {selectedOrder.userId?.email || 'N/A'}</p>
+                                    <p><i className="fas fa-user"></i> User: {selectedOrder.userId?._id || 'N/A'}</p>
+                                    <p><i className="fas fa-envelope"></i> Email: {selectedOrder.userId?.email || 'N/A'}</p>
                                 </>
-                            :
-                            <>
-                            <p><i className="fas fa-user"></i> User: {selectedOrder.userId}</p>
-                            </>
+                                :
+                                <>
+                                    <p><i className="fas fa-user"></i> User: {selectedOrder.userId}</p>
+                                </>
                             }
                             <p><i className="fas fa-info-circle"></i> Status:
-                                <span className={`${styles.cardStatus} ${
-                                    selectedOrder.status === 'completed' ? styles.completed : 
-                                    selectedOrder.status === 'pending' ? styles.pending : 
-                                    selectedOrder.status === 'canceled' ? styles.canceled :
-                                    styles.failed
-                                }`}>
+                                <span className={`${styles.cardStatus} ${selectedOrder.status === 'completed' ? styles.completed :
+                                    selectedOrder.status === 'pending' ? styles.pending :
+                                        selectedOrder.status === 'canceled' ? styles.canceled :
+                                            styles.failed
+                                    }`}>
                                     {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
                                 </span>
                             </p>
@@ -198,11 +213,11 @@ const Orders = () => {
                             <ul>
                                 {selectedOrder.items.map((item, index) => (
                                     <li key={index}>
-                                        {item.productId} - Quantity: {item.quantity} 
+                                        {item.productId} - Quantity: {item.quantity}
                                     </li>
                                 ))}
                             </ul>
-                            
+
                             {Role === 'admin' && (
                                 <div>
                                     <h6 className='text-center'>Update Order Status:</h6>

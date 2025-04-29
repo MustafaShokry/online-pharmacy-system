@@ -24,8 +24,15 @@ const ProductManager = () => {
 
     const fetchProducts = async () => {
         try {
-            const { data } = await axios.get(`${BaseUrl}/products/getAllProducts`);
-            setProducts(data.allProducts);
+            const token = localStorage.getItem("token");
+            const { data } = await axios.get(`${BaseUrl}/products/getAllProducts`,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data', // Important
+                        'Authorization': `Bearer ${token}`      // Token
+                    }
+                });
+            setProducts(data);
         } catch (error) {
             console.error("Error fetching products", error);
         }
@@ -33,8 +40,14 @@ const ProductManager = () => {
 
     const deleteProduct = async (_id) => {
         try {
-            await axios.delete(`${BaseUrl}/products/deleteProduct`, {
-                data: { _id },
+            const token = localStorage.getItem("token");
+            console.log(token)
+            await axios.delete(`${BaseUrl}/products/deleteProduct`,
+                { _id }, {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Important
+                    Authorization: `Bearer ${token}`      // Token
+                }
             });
             fetchProducts();
         } catch (error) {
@@ -44,9 +57,14 @@ const ProductManager = () => {
 
     const updateProduct = async () => {
         try {
+            const token = localStorage.getItem("token");
             await axios.put(`${BaseUrl}/products/updateProduct`, {
                 ...formData,
                 _id: editingProduct._id,
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Important
+                    'Authorization': `Bearer ${token}`      // Token
+                }
             });
             setShowModal(false);
             fetchProducts();

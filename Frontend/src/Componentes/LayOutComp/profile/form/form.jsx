@@ -17,17 +17,17 @@ const Form = () => {
             theme: 'dark'
         });
     };
-const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     const [loading, setLoading] = useState(false);
-    const { userData, saveUserData ,setUserData ,setRole } = useContext(mediaContext);
+    const { userData, saveUserData, setUserData, setRole } = useContext(mediaContext);
     const [user, setUser] = useState([]);
     const validationSchema = Yup.object({
-        firstName:Yup.string().required().min(3).max(15),
-        lastName:Yup.string().required().min(3).max(15),
-        phone:Yup.string()
-        .matches(/^\d{11}$/, 'Phone number must be exactly 11 digits')
-        .required('Phone number is required'),     
+        firstName: Yup.string().required().min(3).max(15),
+        lastName: Yup.string().required().min(3).max(15),
+        phone: Yup.string()
+            .matches(/^\d{11}$/, 'Phone number must be exactly 11 digits')
+            .required('Phone number is required'),
         email: Yup.string().email('Invalid email').required('Email is required'),
         age: Yup.number().required('Age is required').positive().integer(),
         gender: Yup.string().required('Gender is required'),
@@ -52,7 +52,8 @@ const token = localStorage.getItem("token");
                 street: '',
                 city: '',
                 state: '',
-                country: ''
+                country: '',
+                zipCode: '12345'
             },
             password: ''
         },
@@ -66,64 +67,62 @@ const token = localStorage.getItem("token");
                     {
                         headers: {
                             'Content-Type': 'application/json',
-                            Authorization: `Bearer ${token}` 
+                            Authorization: `Bearer ${token}`
                         }
                     }
                 );
-                const data = await response.json();
                 notify("User data updated successfully!", 'success');
-                localStorage.setItem('token', data.token);
                 saveUserData();
                 setLoading(false);
             } catch (error) {
                 setLoading(false);
-                notify(error.message, 'error');
+                // notify(error.message, 'error');
             }
-                
-            
+
+
         }
     });
     function deepEqual(obj1, obj2) {
         if (obj1 === obj2) return true;
-    
+
         if (typeof obj1 !== "object" || typeof obj2 !== "object" || obj1 === null || obj2 === null) {
             return false;
         }
-    
+
         const keys1 = Object.keys(obj1);
         const keys2 = Object.keys(obj2);
-    
+
         if (keys1.length !== keys2.length) return false;
-    
+
         for (let key of keys1) {
             if (!keys2.includes(key)) return false;
             if (!deepEqual(obj1[key], obj2[key])) return false;
         }
-    
+
         return true;
     }
-    
+
     const fetchUserData = async () => {
-            setLoading(true);
-            try {
-                const token = localStorage.getItem("token"); // Get the token
-                const response = await axios.get(`${BaseUrl}/api/auth/me`, {
-                    headers: {
-                        Authorization: `Bearer ${token}` // Add Authorization header
-                    }
-                });
-                if(!deepEqual(response.data.user, user))
-                    setUser(response.data.user);
-                //console.log("hey")
-                //console.log(user.role);
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-                notify(error.message, 'error');
-            }
-        };
+        setLoading(true);
+        try {
+            const token = localStorage.getItem("token"); // Get the token
+            const response = await axios.get(`${BaseUrl}/api/auth/me`, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Add Authorization header
+                }
+            });
+            if (!deepEqual(response.data.user, user))
+                setUser(response.data.user);
+            //console.log("hey")
+            //console.log(user.role);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            // notify(error.message, 'error');
+        }
+    };
     useEffect(() => {
-         fetchUserData();
+        fetchUserData();
         if (user) {
             setUserData(user);
             setRole(user.role);
@@ -138,7 +137,8 @@ const token = localStorage.getItem("token");
                     street: user.address?.street || '',
                     city: user.address?.city || '',
                     state: user.address?.state || '',
-                    country: user.address?.country || ''
+                    country: user.address?.country || '',
+                    zipCode: '12345'
                 },
                 password: ''
             });
@@ -149,7 +149,7 @@ const token = localStorage.getItem("token");
         <>
             <form onSubmit={formik.handleSubmit} className={styles.formContainer}>
                 <h2 className={styles.info}>Profile Info</h2>
-                
+
                 <div className={styles.inputGroup}>
                     <div className={styles.inputWrapper}>
                         <label htmlFor="firstName">User Name</label>

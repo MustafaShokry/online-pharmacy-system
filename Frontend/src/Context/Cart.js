@@ -44,6 +44,8 @@ export default function FetchCartProvider(props) {
                     Authorization: `Bearer ${token}` // Add Authorization header
                 }
             });
+    
+            console.log(data.cart)
             setCart(data.cart);
             calculateNumOfCart(data.cart.items); 
             setNumOfCart(data.cart.items.length);
