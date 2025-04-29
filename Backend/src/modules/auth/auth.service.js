@@ -106,11 +106,26 @@ const getUserById = async (userId) => {
 };
 
 const updateUserById = async (userId, updateData) => {
-    const user = await User.findByIdAndUpdate(userId, updateData, {
+    let user = await User.findById(userId).select('+password');
+    if (!user) throw new AppError('User not found', 404);
+
+    const isMatch = await bcrypt.compare(updateData.password, user.password);
+    if (!isMatch) {
+        throw new AppError('Password is incorrect', 401);
+    }
+    delete updateData.password;
+
+    if (updateData.email && updateData.email !== user.email) {
+        const existingUser = await User.find({ email: updateData.email });
+        if (existingUser.length > 0) {
+            throw new AppError('Email already in use', 400);
+        }
+    }
+    user = await User.findByIdAndUpdate(userId, updateData, {
         new: true,
         runValidators: true,
     });
-    if (!user) throw new AppError('User not found', 404);
+
     return user;
 };
 
