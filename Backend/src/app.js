@@ -8,13 +8,14 @@ const productRouter = require('./modules/product/product.router');
 const wishListRouter = require('./modules/wishList/wishList.routes');
 const OrderRouter = require('./modules/order/order.routes');
 const CartRouter = require('./modules/cart/cart.routes');
+const paymobRouter = require('./modules/paymob/paymob.router');
 const productSeeder = require('./modules/product/product.seed');
 const alternativeRouter = require('./modules/alternative/alternative.routes');
 
 
 function createApp() {
 
-    // productSeeder();
+    productSeeder();
 
     const app = express();
 
@@ -33,22 +34,24 @@ function createApp() {
     // Mount routes
     app.use('/api/auth', authRoutes);
     // Product Routes
-    app.use('/products',productRouter)
+    app.use('/products', productRouter)
     // Wish List Routes
-    app.use('/api/wishList', wishListRouter);  
+    app.use('/api/wishList', wishListRouter);
     // Order Routes
-    app.use('/orders',OrderRouter)
+    app.use('/orders', OrderRouter)
     // Cart Routes
-    app.use('/cart',CartRouter)
+    app.use('/cart', CartRouter)
     // Alternative routes
     app.use('/api/alternative', alternativeRouter);
+    // Payment Routes
+    app.use('/api/paymob', paymobRouter);
 
     // 404 Not Found Handler
     app.use(notFoundHandler);
 
     // Central Error Handler
     app.use(errorHandler);
-    
+
 
     return app;
 }

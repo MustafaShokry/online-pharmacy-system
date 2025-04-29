@@ -41,7 +41,7 @@ const login = async ({ email, password }) => {
         throw new AppError('Invalid email or password', 401);
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRATION,
     });
 
@@ -60,7 +60,7 @@ const forgotPassword = async (email) => {
     user.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
     await user.save();
 
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
     const message = `Click here to reset your password: ${resetUrl}`;
     await sendEmail(user.email, 'Reset Your Password', message);
 };

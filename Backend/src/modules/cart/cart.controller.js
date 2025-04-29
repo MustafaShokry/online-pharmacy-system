@@ -17,9 +17,9 @@ const extractUserIdFromToken = (req) => {
         throw new AppError('Authorization token missing or invalid', 401);
     }
     const token = authHeader.split(' ')[1];
-    console.log(token);
+    
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
+    
     return decoded;
 };
 
@@ -38,13 +38,13 @@ const recalculateCartTotals = (cart) => {
 
 module.exports.addProductToCart = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req).id;
-    console.log(userId);
+    
     const { productId } = req.body;
 
     if (!productId) {
         throw new AppError("Product ID is required", 400);
     }
-
+    console.log(1);
     const product = await Product.findById(productId);
     if (!product) {
         throw new AppError("Product not found", 404);
@@ -79,7 +79,7 @@ module.exports.addProductToCart = catchError(async (req, res) => {
 module.exports.updateProductQuantityInCart = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req).id;
     const { productId, quantity } = req.body;
-
+    console.log(2);
     if (!productId || !quantity || quantity < 1) {
         throw new AppError("Product ID and valid quantity are required", 400);
     }
@@ -103,7 +103,7 @@ module.exports.updateProductQuantityInCart = catchError(async (req, res) => {
 module.exports.removeProductFromCart = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req).id;
     const { productId } = req.params;
-
+    console.log(3);
     if (!productId) {
         throw new AppError("Product ID is required", 400);
     }
@@ -127,6 +127,7 @@ module.exports.removeProductFromCart = catchError(async (req, res) => {
 
 module.exports.getCartForUser = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req).id;
+    console.log(4)
     const cart = await cartModel.findOne({ userId }).populate({
         path: 'items.productId',
         model: Product,
@@ -146,7 +147,7 @@ module.exports.getCartForUser = catchError(async (req, res) => {
 module.exports.clearCart = catchError(async (req, res) => {
     const userId = extractUserIdFromToken(req).id;
     const cart = await cartModel.findOne({ userId });
-
+    console.log(6)
     if (!cart) {
         throw new AppError("Cart not found for this user", 404);
     }

@@ -59,9 +59,9 @@ exports.updateProduct = async (req, res) => {
 };
 
 // Delete a product
-exports.deleteProduct = async (req, res) => {
+exports.deleteProduct = async (req, res, next) => {
     try {
-        const { _id } = req.body;        
+        const { _id } = req.body;
         const product = await Product.findByIdAndDelete(_id);
 
         if (!product) {
@@ -91,7 +91,7 @@ exports.getProductsByCategory = async (req, res) => {
         }
         const products = await Product.find({ category }).populate('alternatives');
         const productCount = products.length;
-        res.status(200).json({ 
+        res.status(200).json({
             success: true,
             productCount,
             products: products.map(product => ({
@@ -102,9 +102,9 @@ exports.getProductsByCategory = async (req, res) => {
                 offer: product.offer,
                 description: product.description,
                 image: product.image,
-                productId:product._id
+                productId: product._id
             }))
-         });
+        });
     } catch (error) {
         next(error);
     }

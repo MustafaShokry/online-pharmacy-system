@@ -15,7 +15,6 @@ const addressSchema = new mongoose.Schema({
     },
     zipCode: {
         type: String,
-        required: [true, 'Zip code is required'],
     },
     country: {
         type: String,
