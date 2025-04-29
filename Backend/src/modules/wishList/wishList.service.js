@@ -15,7 +15,6 @@ const addToWishList = async function(userId, productId) {
     throw new AppError('User not found', 404);
   }
   // Check if the product is already in the user's wish addToWishList
-  console.log(user.wishlist);
   const existingWishListItem = user.wishlist.find(product => product.toString() === productId.toString());
   if (existingWishListItem) {
     throw new AppError('Product already in wish list', 400);
@@ -23,12 +22,12 @@ const addToWishList = async function(userId, productId) {
   // Add the product to the user's wish wishList
   user.wishlist.push(productId);
   await user.save();
-  return user.wishlist;
+  return product;
 }
 
 const getWishList = async function(userId) {
   // Check if the user exists
-  const user = await User.findById(userId);
+  const user = await User.findById(userId).populate('wishlist');
   if (!user) {
     throw new AppError('User not found', 404);
   }
