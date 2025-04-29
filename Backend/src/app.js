@@ -14,7 +14,7 @@ const alternativeRouter = require('./modules/alternative/alternative.routes');
 
 function createApp() {
 
-    // productSeeder();
+    //productSeeder();
 
     const app = express();
 
